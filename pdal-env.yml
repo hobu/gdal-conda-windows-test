@@ -1,0 +1,5 @@
+name: gdal-only
+channels:
+  - conda-forge
+dependencies:
+  - pdal

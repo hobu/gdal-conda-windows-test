@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+    - '*'
+  push:
+    branches:
+    - '*'
+  release:
+    types:
+      - published
+
+defaults:
+  run:
+    shell: bash -l -eo pipefail {0}
+
+jobs:
+  build:
+    name: Build ${{ matrix.env }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ['windows-latest']
+        env: ['gdal-only.yml','pdal-env.yml']
+
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+
+    - name: Setup micromamba
+      uses: mamba-org/provision-with-micromamba@main
+      with:
+        environment-file: gdal-only.yml
+        extra-specs: |
+          python=3.10
+
+    - name: Test
+      run: |
+        micromamba info && micromamba list
+        gdalinfo --version
+
